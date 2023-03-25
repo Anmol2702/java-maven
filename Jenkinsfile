@@ -30,5 +30,21 @@ pipeline {
                 }
             }
         }
+        stage("deploy") {
+            input {
+                // to give user input
+                message "Select the env to deploy to"
+                ok "Done"
+                parameters {
+                    // The scope of the parameter defined below is only for this stage
+                    choice(name:'ENV', choices:['Dev', 'Prod'])
+                }
+            }
+            steps {
+                script {
+                    echo "deploying to ${ENV}"
+                }
+            }
+        }
     }
 }
