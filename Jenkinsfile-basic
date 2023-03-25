@@ -1,9 +1,13 @@
 #!/usr/bin/env groovy
-
 pipeline {
     agent none
     stages {
         stage('build') {
+            when {
+                expression {
+                    BRANCH_NAME == 'dev'
+                }
+            }
             steps {
                 script {
                     echo "Building the application..."
@@ -11,6 +15,13 @@ pipeline {
             }
         }
         stage('test') {
+            // here when is the conditional
+            when {
+                expression {
+                    // branch_name is the env variable provided by jenkins  
+                    BRANCH_NAME  == 'dev' || BRANCH_NAME == 'master'
+                }
+            }
             steps {
                 script {
                     echo "Testing the application..."
@@ -23,6 +34,20 @@ pipeline {
                     echo "Deploying the application..."
                 }
             }
+        }
+    }
+
+    // post is used to execute steps after the stage execution is done
+    // we define expressions regarding the build status or build status changes
+    post { 
+        always {
+            // This executes always even if the build fails
+        }
+        success {
+            // This block executes if the build is successful
+        }
+        failure {
+            // This block is executed if the build fails
         }
     }
 }
