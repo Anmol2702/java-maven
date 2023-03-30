@@ -1,6 +1,22 @@
 #!/usr/bin/env groovy
 pipeline {
     agent none
+    tools {
+        // To access build tools for the project - gradle, maven and jdk are available
+        // maven (name of the installation)
+        maven "Maven3.9"
+    }
+    parameters {
+        string(name:'VERSION', defaultValue: '', description: 'version to deploy on prod')
+        choice(name:'VERSION', choices:['1.1.0', '1.2.0'])
+        booleanParam(name:'executeTests', defaultValue: true)
+    }
+    environment {
+        // To define our owm environmental variable
+        NEW_VERSION = '1.3.0'
+        // To bind the credentials deined in the jenkins
+        SERVER_CREDENTIALS = credentials('credential_id')
+    }
     stages {
         stage('build') {
             when {
@@ -11,10 +27,17 @@ pipeline {
             steps {
                 script {
                     echo "Building the application..."
+                    // We have to enclose the below line in double quotes because of the groovy syntax
+                    echo "Building version ${NEW_VERSION}"
                 }
             }
         }
         stage('test') {
+            when {
+                expression {
+                    params.executeTests
+                }
+            }
             // here when is the conditional
             when {
                 expression {
@@ -32,6 +55,13 @@ pipeline {
             steps {
                 script {
                     echo "Deploying the application..."
+                    echo "Deploying version ${params.VERSION}"
+                    // if we require crednetials inside only one stage we can define here instead of the environment attribute
+                    withCredentials([
+                        usernamePassword(credentials: 'server-credentials', usernameVariable: USER, passwordVariable: PWD)
+                    ]) {
+                        sh "some script ${USER} ${PWD}"
+                    }
                 }
             }
         }
