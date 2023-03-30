@@ -34,7 +34,7 @@ pipeline {
             steps {
                 script {
                     echo "building image"
-                    buildImage()
+                    buildImage 'anmol0503/docker-prac:3.0'
                 }
             }
         }
