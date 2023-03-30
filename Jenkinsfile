@@ -1,3 +1,7 @@
+// To import the shared library to be used in the jenkins file
+// If there wasn't a variable def gv after the library def we need to add a underscore at the end
+
+@Library('jenkins-shared-lib')
 def gv
 
 pipeline {
@@ -14,33 +18,33 @@ pipeline {
             steps {
                 script {
                     echo "building jar"
-                    //gv.buildJar()
+                    buildJar()
                 }
             }
         }
         stage("build image") {
-            when {
-                expression {
-                    BRANCH_NAME == 'master'
-                }
-            }
+            // when {
+            //     expression {
+            //         BRANCH_NAME == 'master'
+            //     }
+            // }
             steps {
                 script {
                     echo "building image"
-                    //gv.buildImage()
+                    buildImage()
                 }
             }
         }
         stage("deploy") {
-            when {
-                expression {
-                    BRANCH_NAME == 'master'
-                }
-            }
+            // when {
+            //     expression {
+            //         BRANCH_NAME == 'master'
+            //     }
+            // }
             steps {
                 script {
                     echo "deploying"
-                    //gv.deployApp()
+                    gv.deployApp()
                 }
             }
         }
