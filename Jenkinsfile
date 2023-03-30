@@ -17,6 +17,11 @@ pipeline {
             }
         }
         stage("build") {
+            when {
+                expression {
+                    BRANCH_NAME == 'master'
+                }
+            }
             steps {
                 script {
                     gv.buildApp()
@@ -31,6 +36,11 @@ pipeline {
             }
         }
         stage("deploy") {
+            when {
+                expression {
+                    BRANCH_NAME == 'master'
+                }
+            }
             input {
                 // to give user input
                 message "Select the env to deploy to"
