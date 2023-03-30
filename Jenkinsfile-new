@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven'
+    }
+    stages {
+        stage("build jar") {
+            steps {
+                script {
+                    echo "Building the Application"
+                    sh 'mvn package'
+                }
+            }
+        }
+        stage("build image") {
+            steps {
+                script {
+                    echo "Building the Docker Image"
+                    withCredentials([usernamePassword(credentialId: '6316216a-feb2-44d2-a197-78a1c54af1470', passwordVariable: 'pass', usernameVariable: 'user')]){
+                        sh 'docker build -t anmol0503/docker-prac:2.0 .'
+                        sh "echo $pass | docker login -u $user --password-stdin"
+                        sh 'docker push anmol0503/docker-prac:2.0'
+                    }
+
+                }
+            }
+        }
+        stage("deploy") {
+            steps {
+                script {
+                    echo "Deploying the Application"
+                }
+            }
+        }
+    }
+}
